@@ -1,0 +1,164 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#dceff0">
+  <title>Tide and Finch</title>
+  <link rel="icon" href="data:,">
+  <style>
+    :root{--sky:#dceff0;--ink:#0b2530;--sea:#176d78;--sun:#f5b553;--coral:#df6d4f;--foam:#f8fbf8;--light:#75bac0}
+    *{box-sizing:border-box}
+    html,body{min-height:100%}
+    body{margin:0;color:var(--ink);background:var(--sky);font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;overflow-x:hidden}
+    .page{position:relative;min-height:100svh;display:grid;grid-template-columns:minmax(0,.92fr) minmax(420px,1.08fr);grid-template-rows:1fr auto;column-gap:clamp(2rem,4vw,5.5rem);padding:clamp(2.25rem,5vw,5.75rem) clamp(1.35rem,6vw,7rem) clamp(1.5rem,3vw,2.25rem);isolation:isolate}
+    .copy{position:relative;z-index:3;align-self:center;min-width:0;padding:1rem 0 4rem}
+    .hero{margin:0;width:max-content;max-width:100%;font-family:"Times New Roman",Times,serif;font-size:clamp(4.2rem,8.7vw,8.65rem);font-weight:400;letter-spacing:-.055em;line-height:.79}
+    .hero .line{display:block;white-space:nowrap}
+    .hero .tide{margin-left:.8em;color:var(--sea);font-style:italic;letter-spacing:-.045em}
+    .sub{margin:1.2rem 0 0;font-size:clamp(1rem,1.6vw,1.15rem);line-height:1.5;max-width:28rem;color:rgba(11,37,48,.78)}
+    .signup{display:flex;align-items:stretch;gap:.65rem;width:min(100%,31rem);margin-top:clamp(2rem,4vw,3.4rem)}
+    .signup input,.signup button{height:3.45rem;min-height:3.45rem;font:inherit}
+    .signup input{min-width:0;flex:1 1 auto;border:1px solid rgba(11,37,48,.36);border-radius:999px;padding:0 1.35rem;color:var(--ink);background:rgba(248,251,248,.7);outline:none}
+    .signup input::placeholder{color:rgba(11,37,48,.62)}
+    .signup input:focus{border-color:var(--sea);box-shadow:0 0 0 3px rgba(23,109,120,.14)}
+    .signup button{flex:0 0 auto;border:0;border-radius:999px;padding:0 1.6rem;color:var(--foam);background:var(--ink);cursor:pointer;transition:background 160ms ease,transform 160ms ease}
+    .signup button:hover{background:var(--sea)}
+    .signup button:active{transform:translateY(1px)}
+    .signup button:disabled{cursor:wait;opacity:.7}
+    .status{min-height:1.35rem;margin:.8rem 0 0;font-size:.9rem;line-height:1.45}
+    .status[data-state="error"]{color:#8b3826}.status[data-state="success"]{color:var(--sea)}
+    .art{position:relative;z-index:1;align-self:stretch;min-width:0;min-height:32rem;overflow:hidden}
+    .art svg{display:block;width:100%;height:100%;overflow:visible}
+    .disc{fill:var(--sun)}.bird{fill:var(--ink)}.bird-detail{fill:none;stroke:var(--foam);stroke-width:2.4;stroke-linecap:round;opacity:.82}.light{fill:var(--light)}.foam{fill:var(--foam)}.deep{fill:var(--sea)}.coral{fill:var(--coral)}
+    footer{position:relative;z-index:4;grid-column:1/-1;display:flex;justify-content:space-between;gap:1rem;padding-top:1.35rem;border-top:1px solid rgba(11,37,48,.22);font-size:.78rem;letter-spacing:.08em}
+    footer span:first-child{font-weight:600}
+    @media(max-width:860px){
+      .page{display:flex;min-height:100svh;flex-direction:column;padding:2rem 1.25rem 1.25rem}
+      .copy{align-self:stretch;text-align:center;padding:clamp(2rem,8vh,4.5rem) 0 1rem}
+      .hero{margin-inline:auto;font-size:clamp(3.8rem,17vw,6.3rem);line-height:.82}
+      .sub{margin:1rem auto 0}
+      .signup{width:min(100%,25rem);margin:1.75rem auto 0;flex-direction:column;align-items:center}
+      .signup input,.signup button{width:100%}
+      .status{text-align:center}
+      .art{width:min(100%,36rem);min-height:18rem;height:min(45vh,27rem);margin:0 auto;flex:1 0 18rem}
+      footer{margin-top:.5rem}
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <section class="copy" aria-labelledby="hero-heading">
+      <h1 class="hero" id="hero-heading">
+        <span class="line">Come ride</span>
+        <span class="line tide">the tide.</span>
+      </h1>
+      <p class="sub">A fresh perspective on everyday refreshment.</p>
+      <form class="signup" id="signup" novalidate>
+        <label for="email" hidden>Email address</label>
+        <input id="email" name="email" type="email" autocomplete="email" inputmode="email" placeholder="Enter your email" required maxlength="254">
+        <button type="submit">Stay in touch</button>
+      </form>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </section>
+
+    <section class="art" aria-hidden="true">
+      <svg viewBox="0 0 900 720" role="img" preserveAspectRatio="xMidYMid meet">
+        <circle class="disc" cx="598" cy="190" r="139"/>
+        <g class="bird" transform="translate(432 128) rotate(-7)">
+          <path d="M23 105c42-3 61-39 94-52 18-7 42-3 61 9 25 15 39 5 51-18-1 29-12 51-31 65-16 12-35 17-56 15-19 20-48 29-78 22 16-6 27-17 31-33-28 8-50 6-72-8Z"/>
+          <path d="M118 55c-3-20 8-38 28-49-2 17 4 29 20 38-18-3-34 1-48 11Z"/>
+          <path d="M228 44l35 4-32 14Z"/>
+          <circle cx="205" cy="55" r="4.5" fill="#f8fbf8"/>
+          <path class="bird-detail" d="M75 108c31 4 64-5 94-31M96 119c25 0 47-7 67-21"/>
+        </g>
+        <path class="light" d="M-30 456C97 395 210 397 333 450c91 40 176 57 276 18 100-39 198-36 321 31v245H-30Z"/>
+        <path class="foam" d="M-44 503c109-53 219-47 321 1 113 53 221 63 322 9 109-58 221-50 346 12l-4 72c-120-52-221-57-318-9-114 55-233 46-354-11-98-46-203-48-313 4Z"/>
+        <path class="deep" d="M-37 574c117-42 218-35 317 8 125 54 242 55 351-4 91-49 190-50 307 0v177H-37Z"/>
+        <path class="coral" d="M-49 652c95-32 190-30 286 8 131 52 253 49 365-4 105-50 215-48 338 7v101H-49Z"/>
+        <path class="foam" d="M-40 696c88-28 184-24 289 13 126 45 245 42 355-2 101-40 209-39 331 8v57H-40Z"/>
+      </svg>
+    </section>
+
+    <footer><span>tideandfinch.com</span><span>© 2026</span></footer>
+  </main>
+
+  <script>
+    const BACKEND_URL = "https://script.google.com/macros/s/AKfycbxzgH_o5q4sAYjQM4RitutMGNj9IpIhBgKwZsDOMWVgxWfe_KS4N23-jUxbNXlPw87roA/exec";
+    const form = document.getElementById('signup');
+    const email = document.getElementById('email');
+    const button = form.querySelector('button');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      status.textContent = '';
+      status.dataset.state = '';
+      if (!email.checkValidity()) {
+        status.textContent = 'Please enter a valid email address.';
+        status.dataset.state = 'error';
+        email.focus();
+        return;
+      }
+      const addr = email.value.trim();
+      button.disabled = true;
+      button.textContent = 'Adding you…';
+
+      try {
+        // Try to POST with CORS - Apps Script Web App allows POST from anywhere when deployed as ANYONE_ANONYMOUS
+        // Use URLSearchParams to match e.parameter.email in doPost
+        const res = await fetch(BACKEND_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams({ email: addr }).toString(),
+        });
+
+        // If response is JSON and readable
+        if (res.ok) {
+          let data;
+          try { data = await res.json(); } catch { data = null; }
+          if (data && data.ok) {
+            form.reset();
+            status.textContent = data.message || "You're on the list — we'll be in touch.";
+            status.dataset.state = 'success';
+          } else if (data && !data.ok) {
+            status.textContent = data.message || 'We could not add you just now. Please try again.';
+            status.dataset.state = 'error';
+          } else {
+            // Opaque or non-JSON but 200 - assume success (common with no-cors)
+            form.reset();
+            status.textContent = "You're on the list — we'll be in touch.";
+            status.dataset.state = 'success';
+          }
+        } else {
+          // Try to read error JSON
+          let data;
+          try { data = await res.json(); } catch { data = null; }
+          status.textContent = (data && data.message) || 'We could not add you just now. Please try again.';
+          status.dataset.state = 'error';
+        }
+      } catch (err) {
+        // Network error likely CORS with no-cors mode - try no-cors fallback (request still reaches server)
+        try {
+          await fetch(BACKEND_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: new URLSearchParams({ email: addr }).toString(),
+          });
+          // no-cors succeeded (opaque) - assume write succeeded
+          form.reset();
+          status.textContent = "You're on the list — we'll be in touch.";
+          status.dataset.state = 'success';
+        } catch (err2) {
+          console.error(err2);
+          status.textContent = 'We could not add you just now. Please try again.';
+          status.dataset.state = 'error';
+        }
+      } finally {
+        button.disabled = false;
+        button.textContent = 'Stay in touch';
+      }
+    });
+  </script>
+</body>
+</html>
