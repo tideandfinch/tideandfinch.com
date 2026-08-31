@@ -105,55 +105,22 @@
       button.textContent = 'Adding you…';
 
       try {
-        // Try to POST with CORS - Apps Script Web App allows POST from anywhere when deployed as ANYONE_ANONYMOUS
-        // Use URLSearchParams to match e.parameter.email in doPost
-        const res = await fetch(BACKEND_URL, {
+        // Single POST only - use no-cors to avoid CORS preflight issues with Apps Script
+        // Apps Script Web Apps redirect, which makes CORS reads fail, but the write still happens.
+        // Using no-cors once ensures exactly one row is written (no retry duplication).
+        await fetch(BACKEND_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          mode: 'no-cors',
           body: new URLSearchParams({ email: addr }).toString(),
         });
-
-        // If response is JSON and readable
-        if (res.ok) {
-          let data;
-          try { data = await res.json(); } catch { data = null; }
-          if (data && data.ok) {
-            form.reset();
-            status.textContent = data.message || "You're on the list — we'll be in touch.";
-            status.dataset.state = 'success';
-          } else if (data && !data.ok) {
-            status.textContent = data.message || 'We could not add you just now. Please try again.';
-            status.dataset.state = 'error';
-          } else {
-            // Opaque or non-JSON but 200 - assume success (common with no-cors)
-            form.reset();
-            status.textContent = "You're on the list — we'll be in touch.";
-            status.dataset.state = 'success';
-          }
-        } else {
-          // Try to read error JSON
-          let data;
-          try { data = await res.json(); } catch { data = null; }
-          status.textContent = (data && data.message) || 'We could not add you just now. Please try again.';
-          status.dataset.state = 'error';
-        }
+        // Opaque response - can't read body, but if fetch resolved, the POST reached Google
+        form.reset();
+        status.textContent = "You're on the list — we'll be in touch.";
+        status.dataset.state = 'success';
       } catch (err) {
-        // Network error likely CORS with no-cors mode - try no-cors fallback (request still reaches server)
-        try {
-          await fetch(BACKEND_URL, {
-            method: 'POST',
-            mode: 'no-cors',
-            body: new URLSearchParams({ email: addr }).toString(),
-          });
-          // no-cors succeeded (opaque) - assume write succeeded
-          form.reset();
-          status.textContent = "You're on the list — we'll be in touch.";
-          status.dataset.state = 'success';
-        } catch (err2) {
-          console.error(err2);
-          status.textContent = 'We could not add you just now. Please try again.';
-          status.dataset.state = 'error';
-        }
+        console.error(err);
+        status.textContent = 'We could not add you just now. Please try again.';
+        status.dataset.state = 'error';
       } finally {
         button.disabled = false;
         button.textContent = 'Stay in touch';
