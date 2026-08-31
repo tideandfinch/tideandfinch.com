@@ -1,0 +1,26 @@
+name: Deploy Pages
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'site/**'
+      - 'index.html'
+      - '.github/workflows/deploy-pages.yml'
+  workflow_dispatch:
+
+jobs:
+  deploy-pages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy site/ to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          cname: tideandfinch.com
+          commit_message: "Deploy landing to gh-pages ${{ github.sha }}"
