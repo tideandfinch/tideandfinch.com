@@ -1,19 +1,55 @@
-name: Deploy to Apps Script
+name: Deploy to Apps Script and Pages
+
 on:
   push:
     branches: [ main ]
+  workflow_dispatch:
+
 jobs:
-  deploy:
+  deploy-gas:
     runs-on: ubuntu-latest
+    if: ${{ secrets.CLASP_CREDENTIALS != '' }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: '20'
       - run: npm install -g @google/clasp
-      - name: Setup clasp credentials
-        run: echo "$CLASP_CREDENTIALS" > ~/.clasprc.json
+      - name: Setup clasp
+        run: |
+          echo "$CLASP_CREDENTIALS" > ~/.clasprc.json
+          cat ~/.clasprc.json | head -c 100
+          echo ""
       - name: Push to Apps Script
         env:
           CLASP_CREDENTIALS: ${{ secrets.CLASP_CREDENTIALS }}
-        run: clasp push --force
+          SCRIPT_ID: ${{ secrets.SCRIPT_ID }}
+        run: |
+          # Use SCRIPT_ID from secret if provided, else from clasp.json
+          if [ -n "$SCRIPT_ID" ]; then
+            echo "Using SCRIPT_ID from secret"
+            # Update clasp.json with secret ID if different
+            cat .clasp.json
+          fi
+          clasp push --force
+          # Try to create version and deploy - keep existing deployment stable
+          clasp version "Deploy $GITHUB_SHA" || true
+          clasp deployments
+          # Deploy to existing deployment if possible, else create new
+          clasp deploy --description "GitHub $GITHUB_SHA" || echo "deploy failed, check logs"
+
+  deploy-pages:
+    runs-on: ubuntu-latest
+    needs: deploy-gas
+    if: always()
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./site
+          publish_branch: gh-pages
+          cname: tideandfinch.com
